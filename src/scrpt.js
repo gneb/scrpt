@@ -2,7 +2,7 @@ const xPositions = ['left', 'right'];
 const yPositions = ['top', 'bottom'];
 const nm = 'scrpt';
 const chatWidth = '400px';
-const domain = 'http://161.35.71.150';
+const domain = 'http://164.90.239.9:8000';
 class Scrpt {
     loadInterval;
     constructor({ position = 'bottom-right', appName = '' } = {}) {
@@ -29,6 +29,22 @@ class Scrpt {
         this.createStyles();
     }
 
+    detectMob() {
+        const toMatch = [
+            /Android/i,
+            /webOS/i,
+            /iPhone/i,
+            /iPad/i,
+            /iPod/i,
+            /BlackBerry/i,
+            /Windows Phone/i
+        ];
+
+        return toMatch.some((toMatchItem) => {
+            return navigator.userAgent.match(toMatchItem);
+        });
+    }
+
     getPosition(position) {
         const [y, x] = position.split('-');
         return {
@@ -38,7 +54,7 @@ class Scrpt {
     }
 
     initialize() {
-        const container = document.createElement('div');
+        const container = this.dce('div');
         container.style.position = 'fixed';
         container.style.zIndex = '9999';
         Object.keys(this.position)
@@ -46,30 +62,26 @@ class Scrpt {
 
         document.body.appendChild(container);
 
-        const buttonContainer = document.createElement('div');
+        const buttonContainer = this.dce('div');
         buttonContainer.classList.add(`${nm}-button-container`);
 
-        const chatIcon = document.createElement('span');
-        chatIcon.innerHTML =
-            `<svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" fill="currentColor" class="bi bi-chat-dots" viewBox="0 0 16 16">
-        <path d="M5 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
-        <path d="m2.165 15.803.02-.004c1.83-.363 2.948-.842 3.468-1.105A9.06 9.06 0 0 0 8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6a10.437 10.437 0 0 1-.524 2.318l-.003.011a10.722 10.722 0 0 1-.244.637c-.079.186.074.394.273.362a21.673 21.673 0 0 0 .693-.125zm.8-3.108a1 1 0 0 0-.287-.801C1.618 10.83 1 9.468 1 8c0-3.192 3.004-6 7-6s7 2.808 7 6c0 3.193-3.004 6-7 6a8.06 8.06 0 0 1-2.088-.272 1 1 0 0 0-.711.074c-.387.196-1.24.57-2.634.893a10.97 10.97 0 0 0 .398-2z"/>
-        </svg>`;
+        const chatIcon = this.dce('img');
+        chatIcon.src = `https://icons.getbootstrap.com/assets/icons/chat-dots.svg`;
         chatIcon.classList.add(`${nm}-icon`);
         this.chatIcon = chatIcon;
 
-        const closeIcon = document.createElement('span');
-        closeIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
-        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
-      </svg>`;
+        const closeIcon = this.dce('img');
+        closeIcon.src = `https://icons.getbootstrap.com/assets/icons/x.svg`;
         closeIcon.classList.add(`${nm}-icon`, `${nm}-hidden`);
         this.closeIcon = closeIcon;
 
-        this.chatContainer = document.createElement('div');
+        this.chatContainer = this.dce('div');
         this.chatContainer.classList.add(`${nm}-hidden`, `${nm}-chat-container`);
-        this.chatContainer.style.width = chatWidth;
+        this.chatContainer.style.width = this.detectMob() ? (window.innerWidth - 15) + 'px' : chatWidth;
+        this.chatContainer.style.bottom = this.detectMob() ? "-18px" : '75px';
 
         this.createChatContainerContent();
+        this.chatContent.style.height = this.detectMob() ? (window.innerHeight - 230) + 'px' : "500px";
 
         buttonContainer.appendChild(this.chatIcon);
         buttonContainer.appendChild(this.closeIcon);
@@ -82,94 +94,85 @@ class Scrpt {
     }
 
     createStyles() {
-        const styleTag = document.createElement('style');
+        const styleTag = this.dce('style');
         document.head.appendChild(styleTag);
         styleTag.innerHTML = `
-        ${nm}-button-container,${nm}-scrpt-header{background:linear-gradient(to bottom right,#4294e3,#8f12fd)}${nm}-clearfix::after{content:"";clear:both;display:table}${nm}-icon{cursor:pointer;width:100%;position:absolute;top:11px;left:13px;transition:transform .3s;color:#fff}${nm}-hidden{transform:scale(0)}${nm}-button-container{width:70px;height:70px;border-radius:50%}${nm}-chat-container{box-shadow:0 0 18px 8px rgba(0,0,0,.1);right:-25px;bottom:75px;position:absolute;transition:max-height .2s;background-color:#fff;border-radius:10px}${nm}-chat-container.hidden{max-height:0}${nm}-scrpt-header{display:inline-block;width:100%;margin:0;padding:10px;color:#fff;border-top-left-radius:10px;border-top-right-radius:10px}${nm}-chat-container form input{padding:20px;display:inline-block;width:calc(100% - 50px);border:0;background-color:#f7f7f7}${nm}-chat-container form input:focus{outline:0}${nm}-chat-container form button{cursor:pointer;color:#8f12fd;background-color:#f7f7f7;border:0;border-radius:4px;padding:20px 10px}${nm}-scrpt-chat-bottom-menu{padding-top:20px;list-style-type:none;text-align:center;padding-left:0;margin-left:0}${nm}-scrpt-chat-bottom-menu li{display:inline-block;padding-left:30px;padding-right:30px;cursor:pointer}${nm}-bottom-menu-icon{padding-bottom:5px;display:inline-block}${nm}-chat-content{display:block;width:100%;padding:10px;height:510px;overflow-y:scroll;position:relative;box-shadow:0 4px 2px -2px rgba(0,0,0,.1)}${nm}-fullscreen-button{border:0;background-color:#fff;border-radius:100%;padding-bottom:3px;float:right;margin-left:4px}${nm}-bubble-income,${nm}-bubble-outcome{border-top-left-radius:10px;border-top-right-radius:10px}${nm}-msg-box{display:inline-block;width:80%}${nm}-msg-box p{padding:7px}${nm}-income{float:left}${nm}-outcome{float:right}${nm}-bubble-outcome{background-color:gray;color:#fff;border-bottom-left-radius:10px}${nm}-bubble-income{background-color:#f7f7f7;color:#424242;border-bottom-right-radius:10px}
+ .${nm}-clearfix::after {content: "";clear: both;display: table;}.${nm}-icon {cursor: pointer;width: 65%;position: absolute;top: 11px;left: 13px;transition: transform .3s ease;filter: invert(1);}.${nm}-hidden {transform: scale(0);}.${nm}-button-container {background: linear-gradient(to bottom right, #4294e3, #8f12fd);width: 70px;height: 70px;border-radius: 50%;}.${nm}-chat-container {box-shadow: 0 0 18px 8px rgba(0,0,0, 0.1);right: -25px;bottom: 75px;position: absolute;transition: max-height .2s ease;background-color: white;border-radius: 10px;}.${nm}-chat-container.hidden {max-height: 0px;}.${nm}-scrpt-header {display: inline-block;width: 100%;margin: 0;padding: 10px;color: white;background: linear-gradient(to bottom right, #4294e3, #8f12fd);border-top-left-radius: 10px;border-top-right-radius: 10px;}.${nm}-chat-container form input {padding: 20px;display: inline-block;width: calc(100% - 50px);border: 0px;background-color: #f7f7f7;}.${nm}-chat-container form input:focus {outline: none;}.${nm}-chat-send {cursor: pointer;display: inline-block;padding: 20px 14px;background-color: #f7f7f7;}.${nm}-scrpt-chat-bottom-menu {padding-top: 20px;list-style-type: none;text-align: center;padding-left: 0px;margin-left: 0px;}.${nm}-scrpt-chat-bottom-menu li {display: inline-block;padding-left: 30px;padding-right: 30px;cursor: pointer;}.${nm}-bottom-menu-icon {padding-bottom: 8px;display: inline-block; width: 20px;}.${nm}-chat-content {display: block;width: 100%;padding: 10px;overflow-y: scroll;position: relative;box-shadow: 0 4px 2px -2px rgba(0,0,0, 0.1);}.${nm}-close-button, .${nm}-fullscreen-button {border: 0px;background-color: white;border-radius: 100%;padding-bottom: 3px;float: right;margin-left: 4px;}.${nm}-msg-box {display: inline-block;width:80%;}.${nm}-msg-box p {padding: 7px;}.${nm}-income {float: left;}.${nm}-outcome {float: right;}.${nm}-bubble-outcome {background-color: gray;color: white;border-top-left-radius: 10px;border-top-right-radius: 10px;border-bottom-left-radius: 10px;}.${nm}-bubble-income {background-color: #f7f7f7;color: #424242;border-top-left-radius: 10px;border-top-right-radius: 10px;border-bottom-right-radius: 10px;}
         `;
     }
 
     createChatContainerContent() {
-        const clrfx = document.createElement('span');
+        const clrfx = this.dce('span');
         clrfx.classList.add(`${nm}-clearfix`);
 
         this.chatContainer.innerHTML = '';
-        const title = document.createElement('div');
+        const title = this.dce('div');
         title.classList.add(`${nm}-scrpt-header`);
 
-        const closeButton = document.createElement('button');
-        closeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
-        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
-      </svg> `;
+        const closeButton = this.dce('button');
+        let closeImg = this.dce('img');
+        closeImg.src = this.closeIcon.src;
+        closeButton.appendChild(closeImg);
         closeButton.classList.add(`${nm}-close-button`);
         closeButton.addEventListener("click", () => this.closeChat());
 
         title.appendChild(closeButton);
 
-        this.fullScreenButton = document.createElement('button');
-        this.fullScreenButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrows-angle-expand" viewBox="0 0 16 16">
-        <path fill-rule="evenodd" d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707zm4.344-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707z"/>
-      </svg>`;
+        this.fullScreenButton = this.dce('button');
+        let expandImg = this.dce('img');
+        expandImg.src = `https://icons.getbootstrap.com/assets/icons/arrows-angle-expand.svg`;
+        this.fullScreenButton.appendChild(expandImg);
         this.fullScreenButton.classList.add(`${nm}-fullscreen-button`);
         this.fullScreenButton.addEventListener("click", () => this.fullscreenchat());
         title.appendChild(this.fullScreenButton);
 
 
-        const form = document.createElement('form');
+        const form = this.dce('form');
         form.classList.add(`${nm}-content`);
 
-        const text = document.createElement('input');
+        const text = this.dce('input');
         text.requered = true;
         text.id = `${nm}-text`;
         text.type = "text";
         text.placeholder = this.inputText;
 
-        this.btn = document.createElement('button');
-        this.btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="30" height="20" fill="currentColor" class="bi bi-send-fill" viewBox="0 0 16 16">
-        <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/>
-      </svg>`;
+        let btnDiv = this.dce('div');
+        this.btn = this.dce('img');
+        this.btn.src = `https://icons.getbootstrap.com/assets/icons/send.svg`;
+        btnDiv.classList.add(`${nm}-chat-send`);
+        this.btn.style.width = "20px";
+        btnDiv.appendChild(this.btn);
 
-        this.chatContent = document.createElement('div');
+        this.chatContent = this.dce('div');
         this.chatContent.classList.add(`${nm}-chat-content`);
         form.appendChild(this.chatContent);
         form.appendChild(clrfx);
 
         form.appendChild(text);
-        form.appendChild(this.btn);
+        form.appendChild(btnDiv);
         form.addEventListener('submit', this.submit.bind(this));
 
 
-        const bottomMenuContainer = document.createElement('ul');
+        const bottomMenuContainer = this.dce('ul');
         bottomMenuContainer.classList.add(`${nm}-scrpt-chat-bottom-menu`);
 
         const bottomMenuContainerItems = [
             {
-                icon: `
-                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-house" viewBox="0 0 16 16">
-                <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5ZM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5 5 5Z"/>
-                </svg>`,
+                icon: `https://icons.getbootstrap.com/assets/icons/house.svg`,
                 text: 'Home',
                 click: function () {
                     alert(this.text);
                 }
             },
             {
-                icon: `
-                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-chat-dots" viewBox="0 0 16 16">
-                <path d="M5 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
-                <path d="m2.165 15.803.02-.004c1.83-.363 2.948-.842 3.468-1.105A9.06 9.06 0 0 0 8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6a10.437 10.437 0 0 1-.524 2.318l-.003.011a10.722 10.722 0 0 1-.244.637c-.079.186.074.394.273.362a21.673 21.673 0 0 0 .693-.125zm.8-3.108a1 1 0 0 0-.287-.801C1.618 10.83 1 9.468 1 8c0-3.192 3.004-6 7-6s7 2.808 7 6c0 3.193-3.004 6-7 6a8.06 8.06 0 0 1-2.088-.272 1 1 0 0 0-.711.074c-.387.196-1.24.57-2.634.893a10.97 10.97 0 0 0 .398-2z"/>
-                </svg>`,
+                icon: this.chatIcon.src,
                 text: 'Chat',
                 click: function () {
                     alert(this.text);
                 }
             },
             {
-                icon: `
-                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-question-circle" viewBox="0 0 16 16">
-                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/>
-                </svg>`,
+                icon: `https://icons.getbootstrap.com/assets/icons/question-circle.svg`,
                 text: 'Help',
                 click: function () {
                     alert(this.text);
@@ -178,14 +181,14 @@ class Scrpt {
         ];
 
         bottomMenuContainerItems.forEach(item => {
-            let li = document.createElement('li');
-            let span = document.createElement('span');
+            let li = this.dce('li');
+            let span = this.dce('img');
             span.classList.add(`${nm}-bottom-menu-icon`);
-            span.innerHTML = item.icon;
+            span.src = item.icon;
             li.appendChild(span);
-            let br = document.createElement('br');
+            let br = this.dce('br');
             li.appendChild(br);
-            let text = document.createElement('span');
+            let text = this.dce('span');
             text.innerHTML = item.text;
             li.appendChild(text);
             bottomMenuContainer.appendChild(li);
@@ -235,14 +238,14 @@ class Scrpt {
             this.chatContainer.style.width = `${window.innerWidth - 30}px`;
             this.chatContainer.style.height = `${window.innerHeight - 125}px`;
         } else {
-            this.chatContainer.style.width = chatWidth;
+            this.chatContainer.style.width = this.detectMob() ? (window.innerWidth - 17) + 'px' : chatWidth;
+            this.chatContainer.style.bottom = this.detectMob() ? "-18px" : '75px';
             this.chatContainer.style.height = `auto`;
         }
     }
 
     closeChat() {
         this.open = false;
-        // this.createChatContainerContent();
         this.chatIcon.classList.remove(`${nm}-hidden`);
         this.closeIcon.classList.add(`${nm}-hidden`);
         this.chatContainer.classList.add(`${nm}-hidden`);
@@ -294,6 +297,10 @@ class Scrpt {
         let data = JSON.parse(result);
         this.welcomeMessage = data.data.welcome_message;
         this.inputText = data.data.input_text;
+    }
+
+    dce(el) {
+        return document.createElement([el]);
     }
 
     makeRequest(method, url, params = {}) {
