@@ -212,7 +212,7 @@ class Scrpt {
         inpt.disabled = true;
         inpt.value = '';
         this.btn.disabled = true;
-
+        this.blurAll();
         let result = await this.makeRequest("POST", `${domain}/answer?name=${this.appName}`, {
             question: q
         });
@@ -301,6 +301,13 @@ class Scrpt {
 
     dce(el) {
         return document.createElement([el]);
+    }
+
+    blurAll() {
+        var tmp = document.createElement("input");
+        document.body.appendChild(tmp);
+        tmp.focus();
+        document.body.removeChild(tmp);
     }
 
     makeRequest(method, url, params = {}) {
