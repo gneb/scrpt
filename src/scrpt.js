@@ -213,7 +213,7 @@ class Scrpt {
         inpt.value = '';
         this.btn.disabled = true;
         this.blurAll();
-        let result = await this.makeRequest("POST", `${domain}/answer?name=${this.appName}`, {
+        let result = await this.makeRequest("POST", `${domain}/api/answer/${this.appName}`, {
             question: q
         });
         result = JSON.parse(result);
