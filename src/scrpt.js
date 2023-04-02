@@ -98,8 +98,8 @@ class Scrpt {
         const styleTag = this.dce('style');
         document.head.appendChild(styleTag);
         styleTag.innerHTML = `
- .${nm}-clearfix::after {content: "";clear: both;display: table;}.${nm}-topics{position:absolute; right:0;bottom:0; padding:0 13px 10px 0; margin-bottom:150px; z-index:11} .${nm}-topics-tags{height:0px;padding-left: 5px;
-    list-style-type: none;display: block;overflow-y: scroll;position: absolute;bottom: 0; transition:transform .3s ease;margin-bottom: 180px; z-index:10}.${nm}-topics-tags li{ display:inline-block; float:left; margin-left: 5px;padding: 2px;     background: linear-gradient(to bottom right, #4294e3, #8f12fd);
+ .${nm}-clearfix::after {content: "";clear: both;display: table;}.${nm}-topics{position:absolute; right:0;bottom:60px; padding:0 13px 10px 0; z-index:11} .${nm}-topics-tags{height:0px;padding-left: 5px;
+    list-style-type: none;display: block;overflow-y: scroll;position: absolute;bottom: 60px; transition:transform .3s ease; z-index:10}.${nm}-topics-tags li{ display:inline-block; float:left; margin-left: 5px;padding: 2px;     background: linear-gradient(to bottom right, #4294e3, #8f12fd);
 color: white;border-radius: 7px;font-size: 14px;margin-bottom: 3px;} .${nm}-icon {cursor: pointer;width: 65%;position: absolute;top: 11px;left: 13px;transition: transform .3s ease;filter: invert(1);}.${nm}-hidden {transform: scale(0);}.${nm}-button-container {background: linear-gradient(to bottom right, #4294e3, #8f12fd);width: 70px;height: 70px;border-radius: 50%;}.${nm}-chat-container {box-shadow: 0 0 18px 8px rgba(0,0,0, 0.1);right: -25px;bottom: 75px;position: absolute;transition: max-height .2s ease;background-color: white;border-radius: 10px;}.${nm}-chat-container.hidden {max-height: 0px;}.${nm}-scrpt-header {display: inline-block;width: 100%;margin: 0;padding: 10px;color: white;background: linear-gradient(to bottom right, #4294e3, #8f12fd);border-top-left-radius: 10px;border-top-right-radius: 10px;}.${nm}-chat-container form input {padding: 20px;display: inline-block;width: calc(100% - 50px);border: 0px;background-color: #f7f7f7;}.${nm}-chat-container form input:focus {outline: none;}.${nm}-chat-send {cursor: pointer;display: inline-block;padding: 20px 14px;background-color: #f7f7f7;}.${nm}-scrpt-chat-bottom-menu {padding-top: 20px;list-style-type: none;text-align: center;padding-left: 0px;margin-left: 0px;}.${nm}-scrpt-chat-bottom-menu li {display: inline-block;padding-left: 30px;padding-right: 30px;cursor: pointer;}.${nm}-bottom-menu-icon {padding-bottom: 8px;display: inline-block; width: 20px;}.${nm}-chat-content {display: block;width: 100%;padding: 10px;overflow-y: scroll;position: relative;box-shadow: 0 4px 2px -2px rgba(0,0,0, 0.1);}.${nm}-close-button, .${nm}-fullscreen-button {border: 0px;background-color: white;border-radius: 100%;padding-bottom: 3px;float: right;margin-left: 4px;}.${nm}-msg-box {display: inline-block;width:80%;}.${nm}-msg-box p {padding: 7px;}.${nm}-income {float: left;}.${nm}-outcome {float: right;}.${nm}-bubble-outcome {    background: linear-gradient(to bottom right, #4294e3, #8f12fd);color: white;border-top-left-radius: 10px;border-top-right-radius: 10px;border-bottom-left-radius: 10px;}.${nm}-bubble-income {background-color: #f7f7f7;color: #424242;border-top-left-radius: 10px;border-top-right-radius: 10px;border-bottom-right-radius: 10px;}
         `;
     }
@@ -131,6 +131,7 @@ color: white;border-radius: 7px;font-size: 14px;margin-bottom: 3px;} .${nm}-icon
 
 
         const form = this.dce('form');
+        form.style.position = 'relative';
         form.classList.add(`${nm}-content`);
 
         const text = this.dce('input');
@@ -158,13 +159,13 @@ color: white;border-radius: 7px;font-size: 14px;margin-bottom: 3px;} .${nm}-icon
         this.topicBtn.setAttribute('role', 'button');
         this.topicBtn.setAttribute('id', `${nm}-topics-img`);
         this.topicBtn.src = 'https://icons.getbootstrap.com/assets/icons/book.svg';
-        this.chatContainer.appendChild(this.topicBtn);
-        this.chatContainer.appendChild(this.topicsTags);
         form.appendChild(this.chatContent);
         form.appendChild(clrfx);
         this.listTopics();
         form.appendChild(text);
         form.appendChild(btnDiv);
+        form.appendChild(this.topicsTags);
+        form.appendChild(this.topicBtn);
         form.addEventListener('submit', this.submit.bind(this));
 
         document.body.addEventListener('click', (event) => this.handleTopics(this, event));
@@ -177,28 +178,18 @@ color: white;border-radius: 7px;font-size: 14px;margin-bottom: 3px;} .${nm}-icon
                 icon: `https://icons.getbootstrap.com/assets/icons/house.svg`,
                 text: 'Home',
                 click: function () {
-                    // alert(this.text);
                 }
             },
-            // {
-            //     icon: `https://icons.getbootstrap.com/assets/icons/book.svg`,
-            //     text: 'Topics',
-            //     click: function () {
-            //         alert(1);
-            //     }
-            // },
             {
                 icon: this.chatIcon.src,
                 text: 'Chat',
                 click: function () {
-                    // alert(this.text);
                 }
             },
             {
                 icon: `https://icons.getbootstrap.com/assets/icons/question-circle.svg`,
                 text: 'Help',
                 click: function () {
-                    // alert(this.text);
                 }
             },
         ];
